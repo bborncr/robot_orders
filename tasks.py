@@ -4,13 +4,24 @@ from RPA.Tables import Tables
 from RPA.PDF import PDF
 from RPA.Archive import Archive
 import requests
+from RPA.Assistant import Assistant
 
 
 @task
-def order_robots_from_RobotSpareBin():
+def user_input_task():
+    assistant = Assistant()
+    assistant.add_heading("Input from user")
+    assistant.add_text_input("text_input", placeholder="Please enter URL")
+    assistant.add_submit_buttons("Submit", default="Submit")
+    result = assistant.run_dialog()
+    url = result.text_input
+    order_robots_from_RobotSpareBin(url) 
+
+
+def order_robots_from_RobotSpareBin(url):
     """Automated robot ordering process"""
     orders = get_orders()
-    open_robot_order_website()
+    open_robot_order_website(url)
     for order in orders:
         close_annoying_modal()
         fill_the_form(order)
@@ -110,11 +121,12 @@ def screenshot_robot(order_number, screenshot_file):
     page.screenshot(path=screenshot_file)
 
 
-def open_robot_order_website():
+def open_robot_order_website(url):
     """
     Open the robot order website.
     """
-    browser.goto("https://robotsparebinindustries.com/#/robot-order")
+    # url = "https://robotsparebinindustries.com/#/robot-order"
+    browser.goto(url)
 
 
 def close_annoying_modal():
